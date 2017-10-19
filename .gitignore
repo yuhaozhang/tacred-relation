@@ -1,0 +1,12 @@
+__pycache__/
+*.py[cod]
+*$py.class
+
+.DS_Store
+*.env
+*.tmp
+
+saved_models/
+dataset/glove/
+dataset/vocab/
+
