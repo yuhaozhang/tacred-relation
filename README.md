@@ -1,4 +1,4 @@
-Position-aware Attention RNN Model for Relation Extaction
+Position-aware Attention RNN Model for Relation Extraction
 =========================
 
 This repo contains the *pytorch* code for paper [Position-aware Attention and Supervised Data Improve Slot Filling](https://nlp.stanford.edu/pubs/zhang2017tacred.pdf).
