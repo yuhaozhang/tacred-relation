@@ -3,7 +3,7 @@ Position-aware Attention RNN Model for Relation Extraction
 
 This repo contains the *pytorch* code for paper [Position-aware Attention and Supervised Data Improve Slot Filling](https://nlp.stanford.edu/pubs/zhang2017tacred.pdf).
 
-**About TACRED data**: Please note that we are still in the process of licensing TACRED with LDC. For completeness this repo only contains sampled data from TACRED.
+**About TACRED data**: Please note that we are still in the process of licensing TACRED with LDC. For completeness this repo only contains sampled data from TACRED. If you'd like to receive email notifications once TACRED is ready for download, please [**fill out this form**](https://goo.gl/forms/nO70omzVyRNbDXt53).
 
 ## Requirements
 
