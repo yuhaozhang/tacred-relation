@@ -49,10 +49,6 @@ class DataLoader(object):
             tokens[ss:se+1] = ['SUBJ-'+d['subj_type']] * (se-ss+1)
             tokens[os:oe+1] = ['OBJ-'+d['obj_type']] * (oe-os+1)
             tokens = map_to_ids(tokens, vocab.word2id)
-            # word dropout for training
-            if not self.eval:
-                tokens = word_dropout(tokens, opt['word_dropout'])
-
             pos = map_to_ids(d['stanford_pos'], constant.POS_TO_ID)
             ner = map_to_ids(d['stanford_ner'], constant.NER_TO_ID)
             deprel = map_to_ids(d['stanford_deprel'], constant.DEPREL_TO_ID)
@@ -85,9 +81,15 @@ class DataLoader(object):
         # sort all fields by lens for easy RNN operations
         lens = [len(x) for x in batch[0]]
         batch, orig_idx = sort_all(batch, lens)
+        
+        # word dropout
+        if not self.eval:
+            words = [word_dropout(sent, self.opt['word_dropout']) for sent in batch[0]]
+        else:
+            words = batch[0]
 
         # convert to tensors
-        words = get_long_tensor(batch[0], batch_size)
+        words = get_long_tensor(words, batch_size)
         masks = torch.eq(words, 0)
         pos = get_long_tensor(batch[1], batch_size)
         ner = get_long_tensor(batch[2], batch_size)
