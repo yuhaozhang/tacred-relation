@@ -75,7 +75,7 @@ def load_tokens(filename):
         data = json.load(infile)
         tokens = []
         for d in data:
-            tokens += d['tokens']
+            tokens += d['token']
     print("{} tokens from {} examples loaded from {}.".format(len(tokens), len(data), filename))
     return tokens
 

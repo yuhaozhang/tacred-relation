@@ -21,5 +21,6 @@ ARGS=""
 for id in 1 2 3 4 5; do
     OUT="saved_models/out/test_${id}.pkl"
     ARGS="$ARGS $OUT"
+done
 python ensemble.py --dataset test $ARGS
 

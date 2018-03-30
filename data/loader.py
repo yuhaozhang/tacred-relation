@@ -40,7 +40,7 @@ class DataLoader(object):
         """ Preprocess the data and convert to ids. """
         processed = []
         for d in data:
-            tokens = d['tokens']
+            tokens = d['token']
             if opt['lower']:
                 tokens = [t.lower() for t in tokens]
             # anonymize tokens
