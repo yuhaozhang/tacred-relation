@@ -12,7 +12,6 @@ from shutil import copyfile
 import torch
 import torch.nn as nn
 import torch.optim as optim
-from torch.autograd import Variable
 
 from data.loader import DataLoader
 from model.rnn import RelationModel

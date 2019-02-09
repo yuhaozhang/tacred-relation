@@ -8,7 +8,7 @@ This repo contains the *PyTorch* code for paper [Position-aware Attention and Su
 ## Requirements
 
 - Python 3 (tested on 3.6.2)
-- PyTorch (tested on 0.1.12)
+- PyTorch (tested on 1.0.0)
 - unzip, wget (for downloading only)
 
 ## Preparation

@@ -6,7 +6,6 @@ import numpy as np
 import torch
 from torch import nn
 from torch.nn import init
-from torch.autograd import Variable
 import torch.nn.functional as F
 
 from utils import constant, torch_utils
@@ -27,11 +26,11 @@ class RelationModel(object):
     def update(self, batch):
         """ Run a step of forward and backward model update. """
         if self.opt['cuda']:
-            inputs = [Variable(b.cuda()) for b in batch[:7]]
-            labels = Variable(batch[7].cuda())
+            inputs = [b.cuda() for b in batch[:7]]
+            labels = batch[7].cuda()
         else:
-            inputs = [Variable(b) for b in batch[:7]]
-            labels = Variable(batch[7])
+            inputs = [b for b in batch[:7]]
+            labels = batch[7]
 
         # step forward
         self.model.train()
@@ -41,19 +40,19 @@ class RelationModel(object):
         
         # backward
         loss.backward()
-        torch.nn.utils.clip_grad_norm(self.model.parameters(), self.opt['max_grad_norm'])
+        torch.nn.utils.clip_grad_norm_(self.model.parameters(), self.opt['max_grad_norm'])
         self.optimizer.step()
-        loss_val = loss.data[0]
+        loss_val = loss.data.item()
         return loss_val
 
     def predict(self, batch, unsort=True):
         """ Run forward prediction. If unsort is True, recover the original order of the batch. """
         if self.opt['cuda']:
-            inputs = [Variable(b.cuda()) for b in batch[:7]]
-            labels = Variable(batch[7].cuda())
+            inputs = [b.cuda() for b in batch[:7]]
+            labels = batch[7].cuda()
         else:
-            inputs = [Variable(b) for b in batch[:7]]
-            labels = Variable(batch[7])
+            inputs = [b for b in batch[:7]]
+            labels = batch[7]
 
         orig_idx = batch[8]
 
@@ -61,12 +60,12 @@ class RelationModel(object):
         self.model.eval()
         logits, _ = self.model(inputs)
         loss = self.criterion(logits, labels)
-        probs = F.softmax(logits).data.cpu().numpy().tolist()
+        probs = F.softmax(logits, dim=1).data.cpu().numpy().tolist()
         predictions = np.argmax(logits.data.cpu().numpy(), axis=1).tolist()
         if unsort:
             _, predictions, probs = [list(t) for t in zip(*sorted(zip(orig_idx,\
                     predictions, probs)))]
-        return predictions, probs, loss.data[0]
+        return predictions, probs, loss.data.item()
 
     def update_lr(self, new_lr):
         torch_utils.change_lr(self.optimizer, new_lr)
@@ -134,7 +133,7 @@ class PositionAwareRNN(nn.Module):
             self.ner_emb.weight.data[1:,:].uniform_(-1.0, 1.0)
 
         self.linear.bias.data.fill_(0)
-        init.xavier_uniform(self.linear.weight, gain=1) # initialize linear layer
+        init.xavier_uniform_(self.linear.weight, gain=1) # initialize linear layer
         if self.opt['attn']:
             self.pe_emb.weight.data.uniform_(-1.0, 1.0)
 
@@ -151,7 +150,7 @@ class PositionAwareRNN(nn.Module):
 
     def zero_state(self, batch_size): 
         state_shape = (self.opt['num_layers'], batch_size, self.opt['hidden_dim'])
-        h0 = c0 = Variable(torch.zeros(*state_shape), requires_grad=False)
+        h0 = c0 = torch.zeros(*state_shape, requires_grad=False)
         if self.use_cuda:
             return h0.cuda(), c0.cuda()
         else:

@@ -4,7 +4,6 @@ Additional layers.
 import torch
 from torch import nn
 from torch.nn import init
-from torch.autograd import Variable
 import torch.nn.functional as F
 
 from utils import constant, torch_utils
@@ -27,8 +26,6 @@ class LSTMLayer(nn.Module):
         _, idx_unsort = torch.sort(idx_sort, dim=0)
 
         lens = list(x_lens[idx_sort])
-        idx_sort = Variable(idx_sort)
-        idx_unsort = Variable(idx_unsort)
         
         # sort by seq lens
         x = x.index_select(0, idx_sort)
@@ -90,12 +87,12 @@ class PositionAwareAttention(nn.Module):
             projs = [x_proj, q_proj, f_proj]
         else:
             projs = [x_proj, q_proj]
-        scores = self.tlinear(F.tanh(sum(projs)).view(-1, self.attn_size)).view(
+        scores = self.tlinear(torch.tanh(sum(projs)).view(-1, self.attn_size)).view(
             batch_size, seq_len)
 
         # mask padding
         scores.data.masked_fill_(x_mask.data, -float('inf'))
-        weights = F.softmax(scores)
+        weights = F.softmax(scores, dim=1)
         # weighted average input vectors
         outputs = weights.unsqueeze(1).bmm(x).squeeze(1)
         return outputs
